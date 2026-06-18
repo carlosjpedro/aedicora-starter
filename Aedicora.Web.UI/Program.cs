@@ -1,3 +1,4 @@
+using Aedicora.Web.UI;
 using Aedicora.Web.UI.Components;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -9,6 +10,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<AccessTokenHandler>();
+builder.Services.AddHttpClient("AedicoraApi", client =>
+    {
+        client.BaseAddress = new Uri(builder.Configuration["Api:BaseUrl"]
+            ?? throw new InvalidOperationException("Api:BaseUrl is not configured."));
+    })
+    .AddHttpMessageHandler<AccessTokenHandler>();
 
 // Authentication: session cookie + Keycloak (OpenID Connect) challenge.
 builder.Services.AddAuthentication(options =>

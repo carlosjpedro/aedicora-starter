@@ -1,7 +1,49 @@
 @page "/"
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
+@inject IHttpClientFactory HttpClientFactory
 
 <PageTitle>Aedicora</PageTitle>
 
 <h1>Aedicora</h1>
+
+@if (loading)
+{
+    <p>Loading names...</p>
+}
+else if (error is not null)
+{
+    <p class="text-danger">@error</p>
+}
+else if (names is not null)
+{
+    <ul>
+        @foreach (var name in names)
+        {
+            <li>@name</li>
+        }
+    </ul>
+}
+
+@code {
+    private List<string>? names;
+    private string? error;
+    private bool loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var client = HttpClientFactory.CreateClient("AedicoraApi");
+            names = await client.GetFromJsonAsync<List<string>>("/api/names");
+        }
+        catch (Exception ex)
+        {
+            error = "Unable to load names.";
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+}
