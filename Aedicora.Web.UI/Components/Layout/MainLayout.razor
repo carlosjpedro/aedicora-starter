@@ -6,7 +6,14 @@
     </div>
 
     <main>
-        <div class="top-row px-4">
+        <div class="top-row px-4 d-flex justify-content-end align-items-center gap-3">
+            <AuthorizeView>
+                <span>Hello, @context.User.Identity?.Name</span>
+                <form action="authentication/logout" method="post">
+                    <AntiforgeryToken/>
+                    <button type="submit" class="btn btn-link p-0">Log out</button>
+                </form>
+            </AuthorizeView>
             <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
         </div>
 
